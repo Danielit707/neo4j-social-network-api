@@ -10,9 +10,6 @@ This project was developed at **Universidad del Norte** by:
 - Eliasib Pajaro
 - Jesus Marquez
 - Jesus Paternina
-- Eliasib Pajaro
-- Jesus Marquez
-- Jesus Paternina
 
 ## Features
 
