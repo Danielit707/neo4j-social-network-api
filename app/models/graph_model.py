@@ -100,3 +100,45 @@ def get_user_network(email: str, depth: int = 2):
                 "props": dict(r._properties)
             })
         return {"nodes": nodes, "rels": rels}
+
+def get_network_stats():
+    with get_db() as session:
+        result = session.run("""
+        OPTIONAL MATCH (u:User)
+        WITH count(u) AS users
+        OPTIONAL MATCH (p:Post)
+        WITH users, count(p) AS posts
+        OPTIONAL MATCH (c:Comment)
+        WITH users, posts, count(c) AS comments
+        OPTIONAL MATCH ()-[r]->()
+        RETURN users, posts, comments, count(r) AS relationships
+        """)
+        record = result.single()
+        if not record:
+            return {"users": 0, "posts": 0, "comments": 0, "relationships": 0}
+        return {
+            "users": record["users"],
+            "posts": record["posts"],
+            "comments": record["comments"],
+            "relationships": record["relationships"],
+        }
+
+def get_user_stats(email: str):
+    with get_db() as session:
+        result = session.run("""
+        MATCH (u:User {email: $email})
+        OPTIONAL MATCH (u)-[:POSTED]->(p:Post)
+        WITH u, count(p) AS posts
+        OPTIONAL MATCH (u)-[:COMMENTED]->(c:Comment)
+        WITH u, posts, count(c) AS comments
+        OPTIONAL MATCH (u)-[r:FRIENDS_WITH|FOLLOWS]->()
+        RETURN posts, comments, count(r) AS connections
+        """, email=email)
+        record = result.single()
+        if not record:
+            return None
+        return {
+            "posts": record["posts"],
+            "comments": record["comments"],
+            "connections": record["connections"],
+        }

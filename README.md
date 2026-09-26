@@ -10,6 +10,9 @@ This project was developed at **Universidad del Norte** by:
 - Eliasib Pajaro
 - Jesus Marquez
 - Jesus Paternina
+- Eliasib Pajaro
+- Jesus Marquez
+- Jesus Paternina
 
 ## Features
 
@@ -31,6 +34,7 @@ This project was developed at **Universidad del Norte** by:
 - PyJWT
 - Passlib with bcrypt
 - PyVis
+- Docker and Docker Compose (optional)
 
 ## Prerequisites
 
@@ -82,6 +86,9 @@ This project was developed at **Universidad del Norte** by:
    but setting `NEO4J_PASSWORD` and `JWT_SECRET` explicitly is recommended.
    Do not commit `.env` or production secrets to the repository.
 
+   A ready-to-copy template is available at
+   [`.env.example`](.env.example).
+
 ## Running the API
 
 From the project root, start the development server:
@@ -97,6 +104,31 @@ Interactive API documentation:
 - Swagger UI: <http://127.0.0.1:8000/docs>
 - ReDoc: <http://127.0.0.1:8000/redoc>
 
+### Docker Compose
+
+Docker Compose starts both the API and a Neo4j 5 Community container:
+
+```bash
+docker compose up --build
+```
+
+For a non-default password and JWT secret, set them before starting:
+
+```bash
+NEO4J_PASSWORD=your-password JWT_SECRET=your-random-secret docker compose up --build
+```
+
+The Neo4j browser is available at <http://localhost:7474>.
+
+## Testing
+
+Install the development dependencies and run the smoke tests:
+
+```bash
+pip install -r requirements-dev.txt
+pytest -q
+```
+
 ## API overview
 
 All protected endpoints require the token returned by `POST /auth/login`:
@@ -108,6 +140,7 @@ Authorization: Bearer <access_token>
 | Method | Endpoint | Description | Authentication |
 | --- | --- | --- | --- |
 | `GET` | `/` | Health/welcome response | No |
+| `GET` | `/health` | Check API and Neo4j connectivity | No |
 | `POST` | `/auth/register` | Register a user | No |
 | `POST` | `/auth/login` | Obtain a JWT access token | No |
 | `POST` | `/users/friend` | Create a friendship or follow relationship | Yes |
@@ -115,6 +148,8 @@ Authorization: Bearer <access_token>
 | `POST` | `/posts/` | Create a post | Yes |
 | `POST` | `/posts/comment` | Comment on a post | Yes |
 | `GET` | `/visual/network/{email}` | Render a user's network graph | No |
+| `GET` | `/analytics/summary` | Return aggregate graph counts | No |
+| `GET` | `/analytics/me` | Return the authenticated user's activity counts | Yes |
 
 Example registration request:
 
