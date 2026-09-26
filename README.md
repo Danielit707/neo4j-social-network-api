@@ -7,9 +7,6 @@ interests, posts, comments, and interactive network visualization.
 This project was developed at **Universidad del Norte** by:
 
 - Daniel Cera
-- Eliasib Pajaro
-- Jesus Marquez
-- Jesus Paternina
 
 ## Features
 
